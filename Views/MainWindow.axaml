@@ -84,7 +84,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,4,2" VerticalAlignment="Center">
                         <Button Content="⏸" Command="{Binding PauseResumeCommand}" ToolTip.Tip="Pause/Resume"
                                 MinWidth="34" Width="40" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
-                        <Button Content="🗑" Command="{Binding ClearCommand}" ToolTip.Tip="Clear data"
+                        <Button Content="🧹" Click="OnClearData" ToolTip.Tip="Clear data"
                                 MinWidth="34" Width="40" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
                         <Button Content="CSV" Click="OnExportCsv" ToolTip.Tip="Export CSV (Ctrl+E)"
                                 Width="50" Height="32" Padding="8,2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11"/>

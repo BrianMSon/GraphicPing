@@ -92,6 +92,14 @@ public partial class MainWindow : Window
         _vm.ExportLogCommand.Execute().Subscribe();
     }
 
+    private async void OnClearData(object? sender, RoutedEventArgs e)
+    {
+        var result = await MessageBox.Show(this, "Clear all data?", "Confirm",
+            MessageBox.MessageBoxButtons.YesNo);
+        if (result == MessageBox.MessageBoxResult.Yes)
+            _vm.ClearCommand.Execute().Subscribe();
+    }
+
     private void OnToggleDarkMode(object? sender, RoutedEventArgs e)
     {
         _isDark = !_isDark;
