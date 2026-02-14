@@ -1,0 +1,198 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GraphicPing.ViewModels"
+        xmlns:controls="using:GraphicPing.Controls"
+        x:Class="GraphicPing.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="GraphicPing — Visual Network Monitor"
+        Width="1050" Height="720"
+        MinWidth="700" MinHeight="450"
+        Topmost="{Binding AlwaysOnTop}">
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="F5" Command="{Binding StartCommand}"/>
+        <KeyBinding Gesture="Escape" Command="{Binding StopCommand}"/>
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding ExportCsvCommand}"/>
+    </Window.KeyBindings>
+
+    <Grid RowDefinitions="Auto,*,Auto,160">
+
+        <!-- Row 0: Controls Panel -->
+        <Border Grid.Row="0" Name="TopPanel" Background="#F0F4F8" Padding="10,8,10,6">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+
+                <!-- Row 0: Hosts + Buttons -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <DockPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Hosts:"
+                                   VerticalAlignment="Top"
+                                   Width="52"
+                                   Foreground="#1E3A5F"
+                                   FontWeight="Bold"
+                                   DockPanel.Dock="Left"
+                                   Margin="0,6,0,0"/>
+                        <TextBox Text="{Binding HostsInput}"
+                                 Name="HostsBox"
+                                 AcceptsReturn="True"
+                                 Height="56"
+                                 Watermark="IP addresses or hostnames (one per line or comma-separated)"
+                                 TextWrapping="Wrap"
+                                 FontFamily="Consolas, Courier New, monospace"
+                                 FontSize="12"/>
+                    </DockPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="3" VerticalAlignment="Top">
+                        <Button Content="▶ Start (F5)"
+                                Command="{Binding StartCommand}"
+                                Width="110"
+                                HorizontalContentAlignment="Center"
+                                Classes="accent"/>
+                        <Button Content="■ Stop (Esc)"
+                                Command="{Binding StopCommand}"
+                                Width="110"
+                                HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Row 1: Settings + extra buttons -->
+                <WrapPanel Grid.Row="1" Margin="52,4,0,0">
+                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
+                        <TextBlock Text="Interval:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <NumericUpDown Value="{Binding PingInterval}"
+                                       Minimum="500" Maximum="60000" Increment="500"
+                                       FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
+                        <TextBlock Text="ms" VerticalAlignment="Center" Foreground="#888"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
+                        <TextBlock Text="Timeout:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <NumericUpDown Value="{Binding PingTimeout}"
+                                       Minimum="500" Maximum="30000" Increment="500"
+                                       FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
+                        <TextBlock Text="ms" VerticalAlignment="Center" Foreground="#888"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
+                        <TextBlock Text="Points:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <NumericUpDown Value="{Binding MaxDataPoints}"
+                                       Minimum="50" Maximum="10000" Increment="50"
+                                       FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
+                        <TextBlock Text="Zoom:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <Slider Value="{Binding ZoomLevel}" Minimum="0.2" Maximum="5" Width="100"
+                                VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,4,2" VerticalAlignment="Center">
+                        <Button Content="⏸" Command="{Binding PauseResumeCommand}" ToolTip.Tip="Pause/Resume"
+                                MinWidth="34" Width="40" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+                        <Button Content="🗑" Command="{Binding ClearCommand}" ToolTip.Tip="Clear data"
+                                MinWidth="34" Width="40" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+                        <Button Content="CSV" Click="OnExportCsv" ToolTip.Tip="Export CSV (Ctrl+E)"
+                                Width="50" Height="32" Padding="8,2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11"/>
+                        <Button Content="Log" Click="OnExportLog" ToolTip.Tip="Export log with stats"
+                                Width="50" Height="32" Padding="8,2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11"/>
+                        <Button Content="🌙" Click="OnToggleDarkMode" ToolTip.Tip="Toggle dark mode"
+                                MinWidth="34" Width="40" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,2,0,2" VerticalAlignment="Center">
+                        <CheckBox Content="📌 Top" IsChecked="{Binding AlwaysOnTop}" VerticalAlignment="Center" FontSize="11"/>
+                        <CheckBox Content="🔔 Alert" IsChecked="{Binding SoundAlertOnFail}" VerticalAlignment="Center" FontSize="11"/>
+                    </StackPanel>
+                </WrapPanel>
+
+                <!-- Row 2: Presets + host toggles -->
+                <Grid Grid.Row="2" ColumnDefinitions="Auto,*" Margin="52,4,0,0">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Preset:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <ComboBox Name="PresetCombo" Width="160" Height="28"
+                                  ItemsSource="{Binding Presets}"
+                                  SelectionChanged="OnPresetSelected">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Content="💾" Click="OnSavePreset" ToolTip.Tip="Save current as preset"
+                                MinWidth="30" Height="28" HorizontalContentAlignment="Center" FontSize="13" Padding="2,0"/>
+                        <Button Content="🗑" Click="OnDeletePreset" ToolTip.Tip="Delete selected preset"
+                                MinWidth="30" Height="28" HorizontalContentAlignment="Center" FontSize="13" Padding="2,0"/>
+                    </StackPanel>
+
+                    <!-- Host toggles shown during ping -->
+                    <ItemsControl Grid.Column="1" ItemsSource="{Binding HostDataList}"
+                                  IsVisible="{Binding IsPinging}"
+                                  HorizontalAlignment="Right" Margin="10,0,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsVisible}"
+                                          Margin="6,0" Padding="2,0"
+                                          FontSize="11">
+                                    <StackPanel Orientation="Horizontal" Spacing="3">
+                                        <Border Width="8" Height="8" CornerRadius="4"
+                                                Background="{Binding Color}"/>
+                                        <TextBlock Text="{Binding Host}"/>
+                                    </StackPanel>
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <!-- Row 3: Statistics -->
+                <Border Grid.Row="3" Margin="52,4,0,0"
+                        Background="#E3ECF4" CornerRadius="4" Padding="8,3"
+                        IsVisible="{Binding StatsSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Text="{Binding StatsSummary}"
+                               FontSize="11"
+                               FontFamily="Consolas, Courier New, monospace"
+                               Foreground="#2C5282"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Row 1: Graph -->
+        <Border Grid.Row="1" Name="GraphBorder" BorderBrush="#7B9ABF" BorderThickness="0,1,0,0">
+            <controls:PingGraphControl Name="PingGraph"
+                                       ViewModel="{Binding}"
+                                       ClipToBounds="True"/>
+        </Border>
+
+        <!-- Row 2: Splitter -->
+        <GridSplitter Grid.Row="2" ResizeDirection="Rows" Height="5"
+                      Background="#7B9ABF" HorizontalAlignment="Stretch"/>
+
+        <!-- Row 3: Log + Status -->
+        <Border Grid.Row="3" Name="LogBorder" Background="#F8F6F2" BorderBrush="#7B9ABF" BorderThickness="0,1,0,0">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Name="LogHeader" Background="#CDDCEB" Padding="0">
+                    <DockPanel>
+                        <TextBlock Text="Log" FontWeight="Bold" Foreground="#1E3A5F" Margin="8,3" DockPanel.Dock="Left"/>
+                        <Button Content="Clear Log" Command="{Binding ClearLogCommand}"
+                                DockPanel.Dock="Right" Margin="4,2,8,2" Height="24" FontSize="10" Padding="6,2"/>
+                        <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#4A6A8A"
+                                   Margin="0,3,8,3" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                    </DockPanel>
+                </Border>
+                <ScrollViewer Name="LogScroller"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <SelectableTextBlock Text="{Binding LogText}"
+                                         FontFamily="Consolas, Courier New, monospace"
+                                         FontSize="11"
+                                         Margin="8,2"
+                                         TextWrapping="NoWrap"/>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
