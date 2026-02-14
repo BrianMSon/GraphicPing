@@ -65,7 +65,7 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
-                        <TextBlock Text="Timeout:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <TextBlock Text="TimeOut:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <NumericUpDown Value="{Binding PingTimeout}"
                                        Minimum="500" Maximum="30000" Increment="500"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
@@ -73,7 +73,7 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
-                        <TextBlock Text="Points:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <TextBlock Text="MaxData:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <NumericUpDown Value="{Binding MaxDataPoints}"
                                        Minimum="50" Maximum="10000" Increment="50"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
@@ -99,8 +99,8 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,2,0,2" VerticalAlignment="Center">
-                        <CheckBox Content="📌 Top" IsChecked="{Binding AlwaysOnTop}" VerticalAlignment="Center" FontSize="11"/>
-                        <CheckBox Content="🔔 Alert" IsChecked="{Binding SoundAlertOnFail}" VerticalAlignment="Center" FontSize="11"/>
+                        <CheckBox Content="📌 Always on Top" IsChecked="{Binding AlwaysOnTop}" VerticalAlignment="Center" FontSize="11"/>
+                        <CheckBox Content="🔔 Sound on Fail" IsChecked="{Binding SoundAlertOnFail}" VerticalAlignment="Center" FontSize="11"/>
                     </StackPanel>
                 </WrapPanel>
 
@@ -118,9 +118,9 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                         <Button Content="💾" Click="OnSavePreset" ToolTip.Tip="Save current as preset"
-                                MinWidth="30" Height="28" HorizontalContentAlignment="Center" FontSize="13" Padding="2,0"/>
+                                MinWidth="30" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13" Padding="2,0"/>
                         <Button Content="🗑" Click="OnDeletePreset" ToolTip.Tip="Delete selected preset"
-                                MinWidth="30" Height="28" HorizontalContentAlignment="Center" FontSize="13" Padding="2,0"/>
+                                MinWidth="30" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13" Padding="2,0"/>
                     </StackPanel>
 
                     <!-- Host toggles shown during ping -->
