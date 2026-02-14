@@ -30,7 +30,7 @@ public class MainWindowViewModel : ViewModelBase
     private System.Timers.Timer? _statusTimer;
 
     // Graph zoom/scroll
-    private double _zoomLevel = 1.0;
+    private double _zoomLevel = 0.1;
 
     private static readonly string[] HostColors =
     [

@@ -77,7 +77,7 @@
 
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="Zoom:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
-                        <Slider Value="{Binding ZoomLevel}" Minimum="0.2" Maximum="5" Width="100"
+                        <Slider Value="{Binding ZoomLevel}" Minimum="0.1" Maximum="10" Width="100"
                                 VerticalAlignment="Center"/>
                     </StackPanel>
 
