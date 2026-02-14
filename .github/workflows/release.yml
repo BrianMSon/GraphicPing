@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Extract version
+        id: version
+        run: echo "VERSION=$('${{ github.ref_name }}'.TrimStart('v'))" >> $env:GITHUB_OUTPUT
+
+      - name: Publish (single file)
+        run: >
+          dotnet publish -c Release -r win-x64
+          --self-contained
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:Version=${{ steps.version.outputs.VERSION }}
+          -p:DebugType=none
+          -o publish
+
+      - name: Zip
+        run: Compress-Archive -Path publish/* -DestinationPath GraphicPing-${{ github.ref_name }}-win-x64.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: GraphicPing-${{ github.ref_name }}-win-x64.zip
+          generate_release_notes: true
