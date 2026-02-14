@@ -43,6 +43,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         StartCommand = ReactiveCommand.Create(StartPinging, this.WhenAnyValue(x => x.IsPinging, p => !p));
         StopCommand = ReactiveCommand.Create(StopPinging, this.WhenAnyValue(x => x.IsPinging));
+        ToggleStartStopCommand = ReactiveCommand.Create(() => { if (IsPinging) StopPinging(); else StartPinging(); });
         PauseResumeCommand = ReactiveCommand.Create(TogglePause, this.WhenAnyValue(x => x.IsPinging));
         ClearCommand = ReactiveCommand.Create(ClearData);
         ClearLogCommand = ReactiveCommand.Create(() => { LogText = ""; });
@@ -149,6 +150,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> StartCommand { get; }
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleStartStopCommand { get; }
     public ReactiveCommand<Unit, Unit> PauseResumeCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearLogCommand { get; }

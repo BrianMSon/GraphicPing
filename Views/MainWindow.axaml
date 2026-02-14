@@ -41,17 +41,13 @@
                                  FontSize="12"/>
                     </DockPanel>
 
-                    <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="3" VerticalAlignment="Top">
-                        <Button Content="▶ Start (F5)"
-                                Command="{Binding StartCommand}"
-                                Width="110"
-                                HorizontalContentAlignment="Center"
-                                Classes="accent"/>
-                        <Button Content="■ Stop (Esc)"
-                                Command="{Binding StopCommand}"
-                                Width="110"
-                                HorizontalContentAlignment="Center"/>
-                    </StackPanel>
+                    <Button Name="ToggleStartStopBtn"
+                            Command="{Binding ToggleStartStopCommand}"
+                            Grid.Column="1"
+                            Width="110" Height="56"
+                            HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+                            FontSize="13"/>
                 </Grid>
 
                 <!-- Row 1: Settings + extra buttons -->
@@ -73,7 +69,7 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
-                        <TextBlock Text="MaxData:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
+                        <TextBlock Text="MaxChart:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <NumericUpDown Value="{Binding MaxDataPoints}"
                                        Minimum="50" Maximum="10000" Increment="50"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>

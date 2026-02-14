@@ -29,6 +29,14 @@ public partial class MainWindow : Window
 
         _vm.ThemeChanged += ApplyTheme;
 
+        var toggleBtn = this.FindControl<Button>("ToggleStartStopBtn")!;
+        toggleBtn.Content = "▶ Start (F5)";
+        _vm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(_vm.IsPinging))
+                toggleBtn.Content = _vm.IsPinging ? "■ Stop (Esc)" : "▶ Start (F5)";
+        };
+
         _vm.SaveFileRequested += async (title, defaultName) =>
         {
             var sp = StorageProvider;
