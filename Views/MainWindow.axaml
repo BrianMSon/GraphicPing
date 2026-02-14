@@ -149,7 +149,7 @@
                 </Grid>
 
                 <!-- Row 3: Statistics -->
-                <Border Grid.Row="3" Margin="52,4,0,0"
+                <Border Grid.Row="3" Name="StatsBorder" Margin="52,4,0,0"
                         Background="#E3ECF4" CornerRadius="4" Padding="8,3"
                         IsVisible="{Binding StatsSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                     <TextBlock Text="{Binding StatsSummary}"
@@ -168,7 +168,7 @@
         </Border>
 
         <!-- Row 2: Splitter -->
-        <GridSplitter Grid.Row="2" ResizeDirection="Rows" Height="5"
+        <GridSplitter Grid.Row="2" Name="MainSplitter" ResizeDirection="Rows" Height="5"
                       Background="#7B9ABF" HorizontalAlignment="Stretch"/>
 
         <!-- Row 3: Log + Status -->
@@ -186,7 +186,7 @@
                 <ScrollViewer Name="LogScroller"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto">
-                    <SelectableTextBlock Text="{Binding LogText}"
+                    <SelectableTextBlock Name="LogText" Text="{Binding LogText}"
                                          FontFamily="Consolas, Courier New, monospace"
                                          FontSize="11"
                                          Margin="8,2"

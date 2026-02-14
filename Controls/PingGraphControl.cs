@@ -73,10 +73,10 @@ public class PingGraphControl : Control
         var w = bounds.Width;
         var h = bounds.Height;
 
-        var bgColor = IsDark ? Color.Parse("#1E1E2E") : Color.Parse("#FAFBFC");
-        var gridColor = IsDark ? Color.Parse("#3A3A4A") : Color.Parse("#E0E0E0");
-        var textColor = IsDark ? Color.Parse("#B0B0C0") : Color.Parse("#666666");
-        var borderColor = IsDark ? Color.Parse("#555568") : Color.Parse("#CCCCCC");
+        var bgColor = IsDark ? Color.Parse("#181926") : Color.Parse("#FAFBFC");
+        var gridColor = IsDark ? Color.Parse("#2E3050") : Color.Parse("#E0E0E0");
+        var textColor = IsDark ? Color.Parse("#A6ADC8") : Color.Parse("#666666");
+        var borderColor = IsDark ? Color.Parse("#3B3F5C") : Color.Parse("#CCCCCC");
 
         var bgBrush = new SolidColorBrush(bgColor);
         var textBrush = new SolidColorBrush(textColor);
@@ -190,7 +190,7 @@ public class PingGraphControl : Control
         if (hoverIdx >= 0)
         {
             double hx = marginLeft + hoverIdx * xStep;
-            var hoverPen = new Pen(new SolidColorBrush(IsDark ? Color.Parse("#666680") : Color.Parse("#BBBBBB")), 1,
+            var hoverPen = new Pen(new SolidColorBrush(IsDark ? Color.Parse("#4A4E6A") : Color.Parse("#BBBBBB")), 1,
                 new DashStyle(new[] { 2.0, 2.0 }, 0));
             context.DrawLine(hoverPen, new Point(hx, marginTop), new Point(hx, marginTop + graphH));
         }
@@ -276,7 +276,7 @@ public class PingGraphControl : Control
                 if (ty + ft.Height + 6 > h) ty = h - ft.Height - 6;
                 if (ty < 0) ty = 0;
 
-                var tipBg = IsDark ? new SolidColorBrush(Color.Parse("#2A2A3C")) : new SolidColorBrush(Color.Parse("#FFFFFF"));
+                var tipBg = IsDark ? new SolidColorBrush(Color.Parse("#232538")) : new SolidColorBrush(Color.Parse("#FFFFFF"));
                 var tipBorder = new Pen(new SolidColorBrush(borderColor), 1);
                 context.DrawRectangle(tipBg, tipBorder,
                     new Rect(tx - 4, ty - 2, ft.Width + 10, ft.Height + 6), 4, 4);
@@ -308,7 +308,7 @@ public class PingGraphControl : Control
         foreach (var hd in vm.HostDataList)
         {
             var color = Color.Parse(hd.Color);
-            var brush = new SolidColorBrush(hd.IsVisible && hd.IsEnabled ? color : Color.Parse(IsDark ? "#555" : "#CCC"));
+            var brush = new SolidColorBrush(hd.IsVisible && hd.IsEnabled ? color : Color.Parse(IsDark ? "#3B3F5C" : "#CCC"));
             context.DrawRectangle(brush, null, new Rect(legendX, legendY, 12, 12));
 
             var prefix = (!hd.IsEnabled ? "⏸ " : !hd.IsVisible ? "👁 " : "");
