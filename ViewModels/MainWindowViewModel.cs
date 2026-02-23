@@ -371,6 +371,9 @@ public class MainWindowViewModel : ViewModelBase
             var logLine = $"[{timeStr}] {displayHost}: {rtStr}\n";
             _fullLog.Append(logLine);
             _allResults.Add(result);
+            int allResultsMax = (_maxDataPoints ?? 300) * Math.Max(1, HostDataList.Count);
+            while (_allResults.Count > allResultsMax)
+                _allResults.RemoveAt(0);
 
             _logText += logLine;
             if (_logText.Length > 80000)
