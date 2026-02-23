@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
@@ -24,7 +25,9 @@ public partial class MainWindow : Window
         _vm.LogUpdated += () =>
         {
             var scroller = this.FindControl<ScrollViewer>("LogScroller");
-            scroller?.ScrollToEnd();
+            if (scroller == null) return;
+            var atBottom = scroller.Offset.Y >= scroller.Extent.Height - scroller.Viewport.Height - 20;
+            if (atBottom) scroller.ScrollToEnd();
         };
 
         _vm.ThemeChanged += ApplyTheme;
@@ -110,6 +113,14 @@ public partial class MainWindow : Window
                 combo.SelectedIndex = -1;
             }
         }
+    }
+
+    private void OnLogKeyDown(object? sender, KeyEventArgs e)
+    {
+        var scroller = this.FindControl<ScrollViewer>("LogScroller");
+        if (scroller == null) return;
+        if (e.Key == Key.Home) { scroller.ScrollToHome(); e.Handled = true; }
+        else if (e.Key == Key.End) { scroller.ScrollToEnd(); e.Handled = true; }
     }
 
     private void OnExportCsv(object? sender, RoutedEventArgs e)

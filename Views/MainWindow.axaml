@@ -186,7 +186,9 @@
                 </Border>
                 <ScrollViewer Name="LogScroller"
                               HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto">
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="True"
+                              KeyDown="OnLogKeyDown">
                     <SelectableTextBlock Name="LogText" Text="{Binding LogText}"
                                          FontFamily="Consolas, Courier New, monospace"
                                          FontSize="11"
