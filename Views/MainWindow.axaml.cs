@@ -14,7 +14,7 @@ namespace GraphicPing.Views;
 public partial class MainWindow : Window
 {
     private readonly MainWindowViewModel _vm;
-    private bool _isDark;
+    private bool _isDark = true;
 
     public MainWindow()
     {
@@ -31,6 +31,7 @@ public partial class MainWindow : Window
         };
 
         _vm.ThemeChanged += ApplyTheme;
+        _vm.IsDarkMode = true;
 
         // Force NumericUpDown to clamp typed values on LostFocus
         SetupNumericClamp("IntervalInput", 500, 60000);
