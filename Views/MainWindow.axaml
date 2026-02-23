@@ -34,6 +34,7 @@
                                    Margin="0,6,0,0"/>
                         <TextBox Text="{Binding HostsInput}"
                                  Name="HostsBox"
+                                 IsEnabled="{Binding !IsPinging}"
                                  AcceptsReturn="True"
                                  Height="56"
                                  Watermark="IP addresses or hostnames (one per line or comma-separated)"
@@ -56,7 +57,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="Interval:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <NumericUpDown Name="IntervalInput" Value="{Binding PingInterval}"
-                                       Increment="500"
+                                       Minimum="500" Maximum="60000" Increment="500"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
                         <TextBlock Text="ms" VerticalAlignment="Center" Foreground="#888"/>
                     </StackPanel>
@@ -64,7 +65,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="TimeOut:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <NumericUpDown Name="TimeoutInput" Value="{Binding PingTimeout}"
-                                       Increment="500"
+                                       Minimum="500" Maximum="30000" Increment="500"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
                         <TextBlock Text="ms" VerticalAlignment="Center" Foreground="#888"/>
                     </StackPanel>
@@ -72,7 +73,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="MaxChart:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <NumericUpDown Name="MaxChartInput" Value="{Binding MaxDataPoints}"
-                                       Increment="50"
+                                       Minimum="50" Maximum="10000" Increment="50"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
                     </StackPanel>
 
@@ -106,6 +107,7 @@
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
                         <TextBlock Text="Preset:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
                         <ComboBox Name="PresetCombo" Width="160" Height="28"
+                                  IsEnabled="{Binding !IsPinging}"
                                   ItemsSource="{Binding Presets}"
                                   SelectionChanged="OnPresetSelected">
                             <ComboBox.ItemTemplate>
@@ -115,8 +117,10 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                         <Button Content="💾" Click="OnSavePreset" ToolTip.Tip="Save current as preset"
+                                IsEnabled="{Binding !IsPinging}"
                                 MinWidth="30" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13" Padding="2,0"/>
                         <Button Content="🗑" Click="OnDeletePreset" ToolTip.Tip="Delete selected preset"
+                                IsEnabled="{Binding !IsPinging}"
                                 MinWidth="30" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13" Padding="2,0"/>
                     </StackPanel>
 

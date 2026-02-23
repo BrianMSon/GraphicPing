@@ -363,7 +363,7 @@ public class MainWindowViewModel : ViewModelBase
                 try { Console.Beep(); } catch { }
             }
 
-            var timeStr = result.Timestamp.ToString("HH:mm:ss.fff");
+            var timeStr = result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff");
             var displayHost = hostData.ResolvedName != null
                 ? $"{hostData.Host} ({hostData.ResolvedName})"
                 : hostData.Host;

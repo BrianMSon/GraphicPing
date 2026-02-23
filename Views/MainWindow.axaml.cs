@@ -29,10 +29,10 @@ public partial class MainWindow : Window
 
         _vm.ThemeChanged += ApplyTheme;
 
-        // Force NumericUpDown to sync clamped values from ViewModel on LostFocus
-        SetupNumericClamp("IntervalInput", () => _vm.PingInterval);
-        SetupNumericClamp("TimeoutInput", () => _vm.PingTimeout);
-        SetupNumericClamp("MaxChartInput", () => _vm.MaxDataPoints);
+        // Force NumericUpDown to clamp typed values on LostFocus
+        SetupNumericClamp("IntervalInput", 500, 60000);
+        SetupNumericClamp("TimeoutInput", 500, 30000);
+        SetupNumericClamp("MaxChartInput", 50, 10000);
 
         var toggleBtn = this.FindControl<Button>("ToggleStartStopBtn")!;
         toggleBtn.Content = "▶ Start (F5)";
@@ -78,23 +78,37 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnSavePreset(object? sender, RoutedEventArgs e)
+    private async void OnSavePreset(object? sender, RoutedEventArgs e)
     {
-        // Simple input: use the first host as name, or prompt
         var hosts = _vm.HostsInput.Trim();
         if (string.IsNullOrEmpty(hosts)) return;
 
-        var name = $"Custom ({DateTime.Now:HH:mm})";
-        _vm.SaveCurrentAsPreset(name);
+        var combo = this.FindControl<ComboBox>("PresetCombo");
+        var selected = combo?.SelectedItem as HostPreset;
+        var currentName = selected?.Name ?? $"Custom ({DateTime.Now:HH:mm})";
+
+        var name = await MessageBox.ShowInput(this, "Preset name:", "Save Preset",
+            currentName, $"Custom ({DateTime.Now:HH:mm})");
+        if (!string.IsNullOrEmpty(name))
+        {
+            _vm.SaveCurrentAsPreset(name);
+            if (combo != null)
+                combo.SelectedItem = _vm.Presets.FirstOrDefault(p => p.Name == name);
+        }
     }
 
-    private void OnDeletePreset(object? sender, RoutedEventArgs e)
+    private async void OnDeletePreset(object? sender, RoutedEventArgs e)
     {
         var combo = this.FindControl<ComboBox>("PresetCombo");
         if (combo?.SelectedItem is HostPreset preset)
         {
-            _vm.DeletePreset(preset);
-            combo.SelectedIndex = -1;
+            var result = await MessageBox.Show(this, $"Delete preset \"{preset.Name}\"?", "Confirm",
+                MessageBox.MessageBoxButtons.YesNo);
+            if (result == MessageBox.MessageBoxResult.Yes)
+            {
+                _vm.DeletePreset(preset);
+                combo.SelectedIndex = -1;
+            }
         }
     }
 
@@ -182,14 +196,23 @@ public partial class MainWindow : Window
         }
     }
 
-    private void SetupNumericClamp(string name, Func<int?> getVmValue)
+    private void SetupNumericClamp(string name, int min, int max)
     {
         var nud = this.FindControl<NumericUpDown>(name);
         if (nud == null) return;
-        nud.LostFocus += (_, _) =>
+        nud.Loaded += (_, _) =>
         {
-            var clamped = getVmValue();
-            Avalonia.Threading.Dispatcher.UIThread.Post(() => nud.Value = clamped);
+            var textBox = nud.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
+            if (textBox == null) return;
+            textBox.LostFocus += (_, _) =>
+            {
+                var text = textBox.Text;
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (int.TryParse(text, out int typed))
+                        nud.Value = Math.Clamp(typed, min, max);
+                });
+            };
         };
     }
 
