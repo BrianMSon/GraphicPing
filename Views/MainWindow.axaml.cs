@@ -29,6 +29,11 @@ public partial class MainWindow : Window
 
         _vm.ThemeChanged += ApplyTheme;
 
+        // Force NumericUpDown to sync clamped values from ViewModel on LostFocus
+        SetupNumericClamp("IntervalInput", () => _vm.PingInterval);
+        SetupNumericClamp("TimeoutInput", () => _vm.PingTimeout);
+        SetupNumericClamp("MaxChartInput", () => _vm.MaxDataPoints);
+
         var toggleBtn = this.FindControl<Button>("ToggleStartStopBtn")!;
         toggleBtn.Content = "▶ Start (F5)";
         var pauseBtn = this.FindControl<Button>("PauseResumeBtn")!;
@@ -175,6 +180,17 @@ public partial class MainWindow : Window
                 FontSize = 14
             };
         }
+    }
+
+    private void SetupNumericClamp(string name, Func<int?> getVmValue)
+    {
+        var nud = this.FindControl<NumericUpDown>(name);
+        if (nud == null) return;
+        nud.LostFocus += (_, _) =>
+        {
+            var clamped = getVmValue();
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => nud.Value = clamped);
+        };
     }
 
     private static readonly HashSet<string> SecondaryColors =

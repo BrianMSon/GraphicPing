@@ -55,24 +55,24 @@
                 <WrapPanel Grid.Row="1" Margin="52,4,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="Interval:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
-                        <NumericUpDown Value="{Binding PingInterval}"
-                                       Minimum="500" Maximum="60000" Increment="500"
+                        <NumericUpDown Name="IntervalInput" Value="{Binding PingInterval}"
+                                       Increment="500"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
                         <TextBlock Text="ms" VerticalAlignment="Center" Foreground="#888"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="TimeOut:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
-                        <NumericUpDown Value="{Binding PingTimeout}"
-                                       Minimum="500" Maximum="30000" Increment="500"
+                        <NumericUpDown Name="TimeoutInput" Value="{Binding PingTimeout}"
+                                       Increment="500"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
                         <TextBlock Text="ms" VerticalAlignment="Center" Foreground="#888"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2,14,2" VerticalAlignment="Center">
                         <TextBlock Text="MaxChart:" VerticalAlignment="Center" Foreground="#1E3A5F" FontWeight="SemiBold"/>
-                        <NumericUpDown Value="{Binding MaxDataPoints}"
-                                       Minimum="50" Maximum="10000" Increment="50"
+                        <NumericUpDown Name="MaxChartInput" Value="{Binding MaxDataPoints}"
+                                       Increment="50"
                                        FormatString="0" Width="140" Height="28" ShowButtonSpinner="True"/>
                     </StackPanel>
 

@@ -64,13 +64,13 @@ public class MainWindowViewModel : ViewModelBase
     public int? PingInterval
     {
         get => _pingInterval;
-        set => this.RaiseAndSetIfChanged(ref _pingInterval, value.HasValue ? Math.Max(100, value.Value) : value);
+        set => this.RaiseAndSetIfChanged(ref _pingInterval, value.HasValue ? Math.Clamp(value.Value, 500, 60000) : value);
     }
 
     public int? PingTimeout
     {
         get => _pingTimeout;
-        set => this.RaiseAndSetIfChanged(ref _pingTimeout, value.HasValue ? Math.Max(500, value.Value) : value);
+        set => this.RaiseAndSetIfChanged(ref _pingTimeout, value.HasValue ? Math.Clamp(value.Value, 500, 30000) : value);
     }
 
     public bool IsPinging
@@ -122,7 +122,7 @@ public class MainWindowViewModel : ViewModelBase
     public int? MaxDataPoints
     {
         get => _maxDataPoints;
-        set => this.RaiseAndSetIfChanged(ref _maxDataPoints, value.HasValue ? Math.Max(50, value.Value) : value);
+        set => this.RaiseAndSetIfChanged(ref _maxDataPoints, value.HasValue ? Math.Clamp(value.Value, 50, 10000) : value);
     }
 
     public double ZoomLevel
