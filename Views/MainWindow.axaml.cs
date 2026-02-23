@@ -113,7 +113,7 @@ public partial class MainWindow : Window
         var result = await MessageBox.Show(this, "Clear all data?", "Confirm",
             MessageBox.MessageBoxButtons.YesNo);
         if (result == MessageBox.MessageBoxResult.Yes)
-            _vm.ClearCommand.Execute().Subscribe();
+            _vm.ClearData();
     }
 
     private void OnToggleDarkMode(object? sender, RoutedEventArgs e)

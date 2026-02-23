@@ -33,8 +33,6 @@ public static class MessageBox
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             CanResize = false,
             ShowInTaskbar = false,
-            SystemDecorations = SystemDecorations.BorderOnly,
-            ExtendClientAreaToDecorationsHint = true,
         };
 
         var titleText = new TextBlock

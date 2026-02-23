@@ -157,7 +157,8 @@ public class PingGraphControl : Control
 
         // Hover detection
         int hoverIdx = -1;
-        if (_lastMouse.X >= marginLeft && _lastMouse.X <= marginLeft + graphW &&
+        if (displayCount > 0 &&
+            _lastMouse.X >= marginLeft && _lastMouse.X <= marginLeft + graphW &&
             _lastMouse.Y >= marginTop && _lastMouse.Y <= marginTop + graphH)
         {
             hoverIdx = displayCount > 1

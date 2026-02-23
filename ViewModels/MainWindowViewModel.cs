@@ -226,26 +226,36 @@ public class MainWindowViewModel : ViewModelBase
         var hosts = ParseHosts();
         if (hosts.Count == 0) return;
 
-        HostDataList.Clear();
-        LogText = "";
-        _fullLog.Clear();
-        _allResults.Clear();
         _isPaused = false;
         this.RaisePropertyChanged(nameof(IsPaused));
 
+        // Reuse existing HostPingData if same host, preserve Stats
+        var existingMap = HostDataList.ToDictionary(h => h.Host);
+        HostDataList.Clear();
+
         for (int i = 0; i < hosts.Count; i++)
         {
-            var hd = new HostPingData
+            if (existingMap.TryGetValue(hosts[i], out var existing))
             {
-                Host = hosts[i],
-                Color = HostColors[i % HostColors.Length],
-                IsVisible = true
-            };
-            HostDataList.Add(hd);
+                existing.Results.Clear();
+                existing.IsVisible = true;
+                existing.IsEnabled = true;
+                HostDataList.Add(existing);
+            }
+            else
+            {
+                var hd = new HostPingData
+                {
+                    Host = hosts[i],
+                    Color = HostColors[i % HostColors.Length],
+                    IsVisible = true
+                };
+                HostDataList.Add(hd);
+            }
         }
 
-        // Resolve hostnames in background
-        foreach (var hd in HostDataList)
+        // Resolve hostnames in background (only for new hosts)
+        foreach (var hd in HostDataList.Where(h => h.ResolvedName == null))
         {
             _ = Task.Run(() =>
             {
@@ -390,7 +400,7 @@ public class MainWindowViewModel : ViewModelBase
         StatusText = IsPaused ? "Paused" : $"Pinging {HostDataList.Count(h => h.IsEnabled)} host(s)...";
     }
 
-    private void ClearData()
+    public void ClearData()
     {
         foreach (var hd in HostDataList)
         {
