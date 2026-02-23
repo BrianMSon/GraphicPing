@@ -217,6 +217,9 @@ public class PingGraphControl : Control
 
         int maxPoints = visibleHosts.Select(h => h.Results.Count).DefaultIfEmpty(0).Max();
         int visibleCount = Math.Max(10, (int)(100 / vm.ZoomLevel));
+        // At minimum zoom, ensure all data is visible
+        if (vm.ZoomLevel <= 0.1 + 1e-6)
+            visibleCount = Math.Max(visibleCount, maxPoints);
 
         // Clamp scroll offset and cache for hit testing
         int maxScroll = Math.Max(0, maxPoints - visibleCount);
