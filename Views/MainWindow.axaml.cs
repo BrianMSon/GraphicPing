@@ -31,10 +31,21 @@ public partial class MainWindow : Window
 
         var toggleBtn = this.FindControl<Button>("ToggleStartStopBtn")!;
         toggleBtn.Content = "▶ Start (F5)";
+        var pauseBtn = this.FindControl<Button>("PauseResumeBtn")!;
         _vm.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(_vm.IsPinging))
                 toggleBtn.Content = _vm.IsPinging ? "■ Stop (Esc)" : "▶ Start (F5)";
+            if (e.PropertyName == nameof(_vm.IsPaused))
+            {
+                var color = _vm.IsPaused ? "#E53935" : (_isDark ? "#CDD6F4" : "#1E3A5F");
+                pauseBtn.Content = new TextBlock
+                {
+                    Text = _vm.IsPaused ? "▶" : "⏸",
+                    Foreground = new SolidColorBrush(Color.Parse(color)),
+                    FontSize = 14
+                };
+            }
         };
 
         _vm.SaveFileRequested += async (title, defaultName) =>
@@ -150,6 +161,19 @@ public partial class MainWindow : Window
 
             SetLabelColors(topPanel, "#1E3A5F", "#888888");
             SetLabelColors(logBorder, "#1E3A5F", "#4A6A8A");
+        }
+
+        // Re-apply pause button color after theme change
+        var pauseBtn = this.FindControl<Button>("PauseResumeBtn");
+        if (pauseBtn != null)
+        {
+            var color = _vm.IsPaused ? "#E53935" : (_isDark ? "#CDD6F4" : "#1E3A5F");
+            pauseBtn.Content = new TextBlock
+            {
+                Text = _vm.IsPaused ? "▶" : "⏸",
+                Foreground = new SolidColorBrush(Color.Parse(color)),
+                FontSize = 14
+            };
         }
     }
 
