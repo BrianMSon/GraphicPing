@@ -47,15 +47,92 @@ public class PingGraphControl : Control
 
     private void OnDataUpdated() => InvalidateVisual();
 
+    // Scroll offset: 0 = show latest (rightmost), positive = scrolled left
+    private int _scrollOffset;
+
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
     {
         base.OnPointerWheelChanged(e);
         var vm = ViewModel;
         if (vm == null) return;
 
-        double delta = e.Delta.Y > 0 ? 1.2 : 1 / 1.2;
-        vm.ZoomLevel *= delta;
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+        {
+            // Horizontal scroll
+            int visibleCount = Math.Max(10, (int)(100 / vm.ZoomLevel));
+            int step = Math.Max(1, visibleCount / 10);
+            _scrollOffset += e.Delta.Y > 0 ? step : -step;
+            _scrollOffset = Math.Max(0, _scrollOffset);
+            InvalidateVisual();
+        }
+        else
+        {
+            // Zoom
+            double delta = e.Delta.Y > 0 ? 1.2 : 1 / 1.2;
+            vm.ZoomLevel *= delta;
+        }
         e.Handled = true;
+    }
+
+    // Drag state
+    private enum DragMode { None, ChartPan, ScrollBar }
+    private DragMode _dragMode;
+    private Point _dragStart;
+    private int _dragStartOffset;
+
+    // Cached layout values for hit testing
+    private double _lastGraphH;
+    private int _lastMaxScroll;
+    private int _lastMaxPoints;
+    private int _lastVisibleCount;
+
+    protected override void OnPointerPressed(PointerPressedEventArgs e)
+    {
+        base.OnPointerPressed(e);
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
+
+        var pos = e.GetPosition(this);
+        const double marginLeft = 58;
+        const double marginRight = 15;
+        const double marginTop = 10;
+        double graphW = Bounds.Width - marginLeft - marginRight;
+
+        // Check if click is on scrollbar area (bottom 10px of graph)
+        double scrollBarY = marginTop + _lastGraphH - 10;
+        if (_lastMaxScroll > 0 && pos.Y >= scrollBarY && pos.Y <= scrollBarY + 14
+            && pos.X >= marginLeft && pos.X <= marginLeft + graphW)
+        {
+            _dragMode = DragMode.ScrollBar;
+            UpdateScrollFromMouseX(pos.X, marginLeft, graphW);
+        }
+        else
+        {
+            _dragMode = DragMode.ChartPan;
+            _dragStart = pos;
+            _dragStartOffset = _scrollOffset;
+        }
+
+        e.Pointer.Capture(this);
+        e.Handled = true;
+    }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        base.OnPointerReleased(e);
+        _dragMode = DragMode.None;
+        e.Pointer.Capture(null);
+    }
+
+    private void UpdateScrollFromMouseX(double mouseX, double marginLeft, double graphW)
+    {
+        if (_lastMaxScroll <= 0) return;
+        double thumbRatio = (double)_lastVisibleCount / _lastMaxPoints;
+        double thumbW = Math.Max(20, graphW * thumbRatio);
+        double trackRange = graphW - thumbW;
+        if (trackRange <= 0) return;
+        double ratio = 1.0 - (mouseX - marginLeft - thumbW / 2) / trackRange;
+        _scrollOffset = (int)Math.Round(Math.Clamp(ratio, 0, 1) * _lastMaxScroll);
+        InvalidateVisual();
     }
 
     // Tooltip on hover
@@ -64,7 +141,32 @@ public class PingGraphControl : Control
     {
         base.OnPointerMoved(e);
         _lastMouse = e.GetPosition(this);
-        InvalidateVisual();
+
+        if (_dragMode == DragMode.ScrollBar)
+        {
+            const double marginLeft = 58;
+            const double marginRight = 15;
+            double graphW = Bounds.Width - marginLeft - marginRight;
+            UpdateScrollFromMouseX(_lastMouse.X, marginLeft, graphW);
+        }
+        else if (_dragMode == DragMode.ChartPan)
+        {
+            var vm = ViewModel;
+            if (vm == null) return;
+            const double marginLeft = 58;
+            const double marginRight = 15;
+            double graphW = Bounds.Width - marginLeft - marginRight;
+            int visibleCount = Math.Max(10, (int)(100 / vm.ZoomLevel));
+            double xStep = visibleCount > 1 ? graphW / (visibleCount - 1) : 1;
+            double dx = _lastMouse.X - _dragStart.X;
+            int pointsDelta = (int)(dx / xStep);
+            _scrollOffset = Math.Max(0, _dragStartOffset + pointsDelta);
+            InvalidateVisual();
+        }
+        else
+        {
+            InvalidateVisual();
+        }
     }
 
     public override void Render(DrawingContext context)
@@ -115,7 +217,16 @@ public class PingGraphControl : Control
 
         int maxPoints = visibleHosts.Select(h => h.Results.Count).DefaultIfEmpty(0).Max();
         int visibleCount = Math.Max(10, (int)(100 / vm.ZoomLevel));
-        int viewEnd = maxPoints;
+
+        // Clamp scroll offset and cache for hit testing
+        int maxScroll = Math.Max(0, maxPoints - visibleCount);
+        _scrollOffset = Math.Clamp(_scrollOffset, 0, maxScroll);
+        _lastGraphH = graphH;
+        _lastMaxScroll = maxScroll;
+        _lastMaxPoints = maxPoints;
+        _lastVisibleCount = visibleCount;
+
+        int viewEnd = maxPoints - _scrollOffset;
         int viewStart = Math.Max(0, viewEnd - visibleCount);
 
         // Y-axis max
@@ -188,7 +299,7 @@ public class PingGraphControl : Control
         }
 
         // Draw hover vertical line
-        if (hoverIdx >= 0)
+        if (hoverIdx >= 0 && _dragMode == DragMode.None)
         {
             double hx = marginLeft + hoverIdx * xStep;
             var hoverPen = new Pen(new SolidColorBrush(IsDark ? Color.Parse("#4A4E6A") : Color.Parse("#BBBBBB")), 1,
@@ -250,7 +361,7 @@ public class PingGraphControl : Control
         }
 
         // Hover tooltip
-        if (hoverIdx >= 0)
+        if (hoverIdx >= 0 && _dragMode == DragMode.None)
         {
             int ri = viewStart + hoverIdx;
             var tooltipLines = new List<string>();
@@ -301,6 +412,22 @@ public class PingGraphControl : Control
                 var ft = MakeText(timeStr, 9, textBrush);
                 context.DrawText(ft, new Point(x - ft.Width / 2, marginTop + graphH + 4));
             }
+        }
+
+        // Scroll indicator (only when zoomed in and scrollable)
+        if (maxScroll > 0)
+        {
+            double barH = 8;
+            double barY = marginTop + graphH - barH - 2;
+            double trackW = graphW;
+            double thumbRatio = (double)visibleCount / maxPoints;
+            double thumbW = Math.Max(20, trackW * thumbRatio);
+            double thumbX = marginLeft + (trackW - thumbW) * (1.0 - (double)_scrollOffset / maxScroll);
+
+            var trackBrush = new SolidColorBrush(Color.FromArgb(50, 128, 128, 128));
+            var thumbBrush = new SolidColorBrush(Color.FromArgb(_dragMode == DragMode.ScrollBar ? (byte)180 : (byte)120, 128, 128, 128));
+            context.DrawRectangle(trackBrush, null, new Rect(marginLeft, barY, trackW, barH), 4, 4);
+            context.DrawRectangle(thumbBrush, null, new Rect(thumbX, barY, thumbW, barH), 4, 4);
         }
 
         // Legend at bottom
