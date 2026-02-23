@@ -28,6 +28,8 @@ public class MainWindowViewModel : ViewModelBase
     private DateTime _startTime;
     private int _totalPingCount;
     private System.Timers.Timer? _statusTimer;
+    private readonly StringBuilder _fullLog = new();
+    private readonly List<PingResult> _allResults = new();
 
     // Graph zoom/scroll
     private double _zoomLevel = 0.1;
@@ -226,6 +228,8 @@ public class MainWindowViewModel : ViewModelBase
 
         HostDataList.Clear();
         LogText = "";
+        _fullLog.Clear();
+        _allResults.Clear();
         _isPaused = false;
         this.RaisePropertyChanged(nameof(IsPaused));
 
@@ -355,8 +359,10 @@ public class MainWindowViewModel : ViewModelBase
                 : hostData.Host;
             var rtStr = result.IsSuccess ? $"{result.RoundtripTime}ms" : $"FAIL ({result.ErrorMessage})";
             var logLine = $"[{timeStr}] {displayHost}: {rtStr}\n";
-            _logText += logLine;
+            _fullLog.Append(logLine);
+            _allResults.Add(result);
 
+            _logText += logLine;
             if (_logText.Length > 80000)
                 _logText = _logText[(_logText.Length - 50000)..];
 
@@ -397,6 +403,8 @@ public class MainWindowViewModel : ViewModelBase
             hd.Stats.Jitter = 0;
         }
         LogText = "";
+        _fullLog.Clear();
+        _allResults.Clear();
         GraphDataUpdated?.Invoke();
         this.RaisePropertyChanged(nameof(StatsSummary));
     }
@@ -414,9 +422,8 @@ public class MainWindowViewModel : ViewModelBase
 
         var sb = new StringBuilder();
         sb.AppendLine("Timestamp,Host,RoundtripTime_ms,Error");
-        foreach (var hd in HostDataList)
-            foreach (var r in hd.Results)
-                sb.AppendLine(r.ToCsvLine());
+        foreach (var r in _allResults)
+            sb.AppendLine(r.ToCsvLine());
 
         await File.WriteAllTextAsync(path, sb.ToString());
         StatusText = $"Exported to {Path.GetFileName(path)}";
@@ -442,7 +449,7 @@ public class MainWindowViewModel : ViewModelBase
             sb.AppendLine($"\n[{display}] {hd.Stats.DetailSummary}");
         }
         sb.AppendLine($"\n{new string('-', 60)}\n");
-        sb.Append(_logText);
+        sb.Append(_fullLog);
 
         await File.WriteAllTextAsync(path, sb.ToString());
         StatusText = $"Log exported to {Path.GetFileName(path)}";
