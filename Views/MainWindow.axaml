@@ -22,8 +22,8 @@
         <Border Grid.Row="0" Name="TopPanel" Background="#F0F4F8" Padding="10,8,10,6">
             <Grid RowDefinitions="Auto,Auto,Auto,Auto">
 
-                <!-- Row 0: Hosts + Buttons -->
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                <!-- Row 0: Hosts + Buttons + Banner -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
                     <DockPanel Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock Text="Hosts:"
                                    VerticalAlignment="Top"
@@ -50,6 +50,12 @@
                             HorizontalContentAlignment="Center"
 							VerticalContentAlignment="Center"
                             FontSize="13"/>
+                    <Image Grid.Column="2" Source="/Assets/gemini_banner.png" Height="22"
+                           Name="GeminiBanner"
+                           Margin="6,0,0,0" VerticalAlignment="Center"/>
+                    <Image Grid.Column="3" Source="/Assets/PayPal-Donate-Button.png" Height="22" Cursor="Hand"
+                           Name="PayPalButton" PointerPressed="OnPayPalClick"
+                           Margin="4,0,0,0" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- Row 1: Settings + extra buttons -->

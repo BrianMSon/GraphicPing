@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\app.png" />
+    <AvaloniaResource Include="Assets\gemini_banner.png" />
+    <AvaloniaResource Include="Assets\PayPal-Donate-Button.png" />
   </ItemGroup>
 
   <ItemGroup>

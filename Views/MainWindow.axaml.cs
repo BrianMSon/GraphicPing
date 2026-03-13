@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -226,6 +227,11 @@ public partial class MainWindow : Window
                 });
             };
         };
+    }
+
+    private void OnPayPalClick(object? sender, PointerPressedEventArgs e)
+    {
+        try { Process.Start(new ProcessStartInfo("https://www.paypal.com/ncp/payment/YHJZY5GCV2ZAA") { UseShellExecute = true }); } catch { }
     }
 
     private static readonly HashSet<string> SecondaryColors =
